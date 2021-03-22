@@ -1,3 +1,5 @@
 import { generate } from "../src";
 
-generate(15, 15, 15);
+let result = generate(15, 15, 15);
+
+console.log(result);

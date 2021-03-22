@@ -1,6 +1,6 @@
 {
   "name": "bridges-generator",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Generates a Hashi puzzle",
   "main": "lib/index.cjs.js",
   "module": "lib/index.js",
@@ -13,7 +13,7 @@
     }
   },
   "scripts": {
-    "build": "tsc && rollup -c && prettier --write ./lib/**/*.{ts,js}",
+    "build": "tsc && rollup -c",
     "format": "prettier --write \"./{src,test}/**/*.{ts,js}\"",
     "prepare": "npm run format && npm run test && npm run build",
     "test": "tsc && node ./out/test/index.js"

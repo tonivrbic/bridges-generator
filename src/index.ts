@@ -5,37 +5,62 @@ import { isSpaceAvailable } from "./isSpaceAvailable";
 import { removeBridges } from "./removeBridges";
 import { showPuzzle } from "./showPuzzle";
 
+/**
+ * Generates a random hashi puzzle.
+ * @param rows Number of rows.
+ * @param columns Number of columns.
+ * @param numberOfIslands Number of islands in the puzzle.
+ * @param doubleBridges Percentage of double bridges in the generated puzzle.
+ * The value must be between 0 and 1.
+ * @returns Returns the puzzle as a two-dimensional array.
+ */
 export const generate = (
   rows: number,
   columns: number,
-  numberOfIslands: number
+  numberOfIslands: number,
+  doubleBridges: number = 0.25
 ) => {
-  let beta = 0.25;
-  let puzzle = generateEmptyPuzzle(rows, columns);
+  let puzzleGenerated = false;
+  while (puzzleGenerated === false) {
+    let puzzle = generateEmptyPuzzle(rows, columns);
 
-  let islands: { row: number; col: number }[] = [];
-  let bridges: [number, number, number, number][] = [];
+    let islands: { row: number; col: number }[] = [];
+    let bridges: [number, number, number, number][] = [];
 
-  fillPuzzleWithIslands(
-    rows,
-    columns,
-    islands,
-    numberOfIslands,
-    puzzle,
-    bridges
-  );
+    puzzleGenerated = fillPuzzleWithIslands(
+      rows,
+      columns,
+      islands,
+      numberOfIslands,
+      puzzle,
+      bridges
+    );
 
-  addDoubleBridges(numberOfIslands, beta, bridges, puzzle);
+    if (!puzzleGenerated) {
+      continue;
+    }
 
-  showPuzzle(puzzle);
+    addDoubleBridges(numberOfIslands, doubleBridges, bridges, puzzle);
 
-  isPuzzleSolveable(puzzle);
+    showPuzzle(puzzle);
+
+    let result = isPuzzleSolveable(puzzle);
+
+    if (!result.solved) {
+      puzzleGenerated = false;
+      continue;
+    }
+
+    return {
+      puzzle: removeBridges(puzzle),
+      solution: result.solution
+    };
+  }
 };
 
 function isPuzzleSolveable(puzzle: any[][]) {
   let emptyPuzzle = removeBridges(puzzle);
-  let result = solver(emptyPuzzle);
-  console.log(result.solved);
+  return solver(emptyPuzzle);
 }
 
 function addDoubleBridges(
@@ -69,7 +94,10 @@ function fillPuzzleWithIslands(
   islands.push({ row: firstRow, col: firstCol });
 
   let islandsRemaining = numberOfIslands;
+  let iterations = 0;
   while (islandsRemaining > 0) {
+    iterations++;
+
     let selected = islands[Math.floor(Math.random() * islands.length)];
 
     let direction = Math.floor(Math.random() * 4);
@@ -112,7 +140,13 @@ function fillPuzzleWithIslands(
     if (generated) {
       islandsRemaining--;
     }
+
+    if (iterations > numberOfIslands * 100) {
+      return false;
+    }
   }
+
+  return true;
 }
 
 function generateEmptyPuzzle(rows: number, columns: number): any[][] {

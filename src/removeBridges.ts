@@ -1,4 +1,4 @@
-export function removeBridges(puzzle: any[][]) {
+export function removeBridges(puzzle: any[][]): number[][] {
   let newPuzzle = JSON.parse(JSON.stringify(puzzle));
 
   newPuzzle.forEach((row, i) =>
