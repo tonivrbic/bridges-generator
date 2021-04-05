@@ -13,8 +13,9 @@ declare const generate: (
   numberOfIslands: number,
   doubleBridges?: number
 ) => {
-  puzzle: any[][];
+  puzzle: number[][];
   solution: string[][];
+  puzzleRetries: number;
 };
 
 export { generate };

@@ -4,6 +4,7 @@ import { fillPuzzleWithBridge } from "./fillPuzzleWithBridge";
 import { isSpaceAvailable } from "./isSpaceAvailable";
 import { removeBridges } from "./removeBridges";
 import { showPuzzle } from "./showPuzzle";
+const { performance } = require("perf_hooks");
 
 /**
  * Generates a random hashi puzzle.
@@ -21,7 +22,11 @@ export const generate = (
   doubleBridges: number = 0.25
 ) => {
   let puzzleGenerated = false;
+  let puzzleRetries = 0;
   while (puzzleGenerated === false) {
+    puzzleRetries++;
+    // console.time("generation");
+    let genStart = performance.now();
     let puzzle = generateEmptyPuzzle(rows, columns);
 
     let islands: { row: number; col: number }[] = [];
@@ -35,28 +40,49 @@ export const generate = (
       puzzle,
       bridges
     );
+    let genEnd = performance.now();
+    // console.timeEnd("generation");
 
     if (!puzzleGenerated) {
       continue;
     }
 
+    let first = JSON.parse(JSON.stringify(puzzle));
+
     addDoubleBridges(numberOfIslands, doubleBridges, bridges, puzzle);
 
-    showPuzzle(puzzle);
+    // showPuzzle(puzzle);
 
+    // console.time("solving");
+
+    let solveStart = performance.now();
     let result = isPuzzleSolveable(puzzle);
+    let solveEnd = performance.now();
+    // console.timeEnd("solving");
 
-    if (!result.solved) {
+    if (!isSolutionCorrect(puzzle, result.solution)) {
+      console.log("bail out");
+      showPuzzle(first);
+      showPuzzle(puzzle);
+      showPuzzle(result.solution);
       puzzleGenerated = false;
       continue;
     }
 
     return {
       puzzle: removeBridges(puzzle),
-      solution: result.solution
+      solution: result.solution,
+      puzzleRetries,
+      genTime: genEnd - genStart,
+      solveTime: solveEnd - solveStart
     };
   }
 };
+
+function isSolutionCorrect(original: any[][], solution: string[][]) {
+  let copy = original.map(r => r.map(c => c.toString()));
+  return JSON.stringify(copy) === JSON.stringify(solution);
+}
 
 function isPuzzleSolveable(puzzle: any[][]) {
   let emptyPuzzle = removeBridges(puzzle);
@@ -71,14 +97,14 @@ function addDoubleBridges(
 ) {
   let doubleBridges = Math.floor(numberOfIslands * beta);
 
-  for (let i = 0; i < doubleBridges; i++) {
+  for (let j = 0; j < doubleBridges; j++) {
     let index = Math.floor(Math.random() * bridges.length);
     let [row1, col1, row2, col2] = bridges[index];
 
     fillPuzzleWithBridge(puzzle, row1, col1, row2, col2, 2);
     puzzle[row1][col1]++;
     puzzle[row2][col2]++;
-    bridges.splice(i, 1);
+    bridges.splice(index, 1);
   }
 }
 
@@ -141,7 +167,7 @@ function fillPuzzleWithIslands(
       islandsRemaining--;
     }
 
-    if (iterations > numberOfIslands * 100) {
+    if (iterations > numberOfIslands * 50) {
       return false;
     }
   }
