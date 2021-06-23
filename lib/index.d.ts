@@ -16,6 +16,8 @@ declare const generate: (
   puzzle: number[][];
   solution: string[][];
   puzzleRetries: number;
+  genTime: number;
+  solveTime: number;
 };
 
 export { generate };

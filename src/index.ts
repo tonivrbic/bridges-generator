@@ -3,7 +3,6 @@ import { detectBridges } from "./detectBridges";
 import { fillPuzzleWithBridge } from "./fillPuzzleWithBridge";
 import { isSpaceAvailable } from "./isSpaceAvailable";
 import { removeBridges } from "./removeBridges";
-import { showPuzzle } from "./showPuzzle";
 const { performance } = require("perf_hooks");
 
 /**
@@ -21,11 +20,11 @@ export const generate = (
   numberOfIslands: number,
   doubleBridges: number = 0.25
 ) => {
+  console.log(`generating ${numberOfIslands}`);
   let puzzleGenerated = false;
   let puzzleRetries = 0;
   while (puzzleGenerated === false) {
     puzzleRetries++;
-    // console.time("generation");
     let genStart = performance.now();
     let puzzle = generateEmptyPuzzle(rows, columns);
 
@@ -58,14 +57,11 @@ export const generate = (
     let solveStart = performance.now();
     let result = isPuzzleSolveable(puzzle);
     let solveEnd = performance.now();
-    // console.timeEnd("solving");
 
-    if (!isSolutionCorrect(puzzle, result.solution)) {
-      console.log("bail out");
-      showPuzzle(first);
-      showPuzzle(puzzle);
-      showPuzzle(result.solution);
+    if (!result.solved) {
+      // if (!isSolutionCorrect(puzzle, result.solution)) {
       puzzleGenerated = false;
+      // console.log(`retry:${puzzleRetries} bridges:${numberOfIslands}`);
       continue;
     }
 
@@ -180,9 +176,14 @@ function generateEmptyPuzzle(rows: number, columns: number): any[][] {
 }
 
 function generateFirstIsland(rows: number, columns: number) {
-  let row = Math.floor(Math.random() * rows);
-  let column = Math.floor(Math.random() * columns);
-  return [row, column];
+  let positions = [
+    [0, 0],
+    [0, columns - 1],
+    [rows - 1, columns - 1],
+    [rows - 1, 0]
+  ];
+
+  return positions[Math.floor(Math.random() * positions.length)];
 }
 
 function tryGeneratingNaighborUp(puzzle, selected, islands, bridges) {
