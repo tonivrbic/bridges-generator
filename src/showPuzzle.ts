@@ -4,7 +4,7 @@ export function showPuzzle(puzzle: any[][]) {
 
   console.log("----------------------------------");
   const display = [];
-  puzzle.forEach(row => display.push(" ".repeat(columns)));
+  puzzle.forEach((row) => display.push(" ".repeat(columns)));
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < columns; j++) {
       if (
@@ -22,7 +22,7 @@ export function showPuzzle(puzzle: any[][]) {
       }
     }
   }
-  display.forEach(row => console.log(row));
+  display.forEach((row) => console.log(row));
   console.log("----------------------------------");
   return display;
 }

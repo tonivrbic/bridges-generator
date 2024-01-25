@@ -3,7 +3,6 @@ import { detectBridges } from "./detectBridges";
 import { fillPuzzleWithBridge } from "./fillPuzzleWithBridge";
 import { isSpaceAvailable } from "./isSpaceAvailable";
 import { removeBridges } from "./removeBridges";
-import { showPuzzle } from "./showPuzzle";
 
 /**
  * Generates a random hashi puzzle.
@@ -42,7 +41,7 @@ export const generate = (
 
     addDoubleBridges(numberOfIslands, doubleBridges, bridges, puzzle);
 
-    showPuzzle(puzzle);
+    // showPuzzle(puzzle);
 
     let result = isPuzzleSolveable(puzzle);
 
@@ -150,7 +149,7 @@ function fillPuzzleWithIslands(
 }
 
 function generateEmptyPuzzle(rows: number, columns: number): any[][] {
-  return new Array(rows).fill(0).map(x => new Array(columns).fill(0));
+  return new Array(rows).fill(0).map((x) => new Array(columns).fill(0));
 }
 
 function generateFirstIsland(rows: number, columns: number) {
