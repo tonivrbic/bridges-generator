@@ -19,7 +19,7 @@ Also, I have a hashi **solver** library that is available on
 To install the library, run the following command in your terminal:
 
 ```sh
-npm install hashi-puzzle-generator
+npm install bridges-generator
 ```
 
 ## Usage instructions
@@ -45,7 +45,7 @@ The `generate` function returns an object with two properties:
 Here is an example of how to use the library to generate a 10x10 puzzle with 5 islands and 20% double bridges:
 
 ```javascript
-import { generate } from 'hashi-puzzle-generator';
+import { generate } from 'bridges-generator';
 
 const generated = generate(10, 10, 5, 0.2);
 console.log(generated.puzzle);

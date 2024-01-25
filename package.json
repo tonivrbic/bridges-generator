@@ -12,11 +12,14 @@
       "default": "./lib/index.js"
     }
   },
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "build": "node build.mjs && dts-bundle-generator -o lib/index.d.ts src/index.ts",
     "format": "prettier --write \"./{src,test}/**/*.{ts,js}\"",
     "test": "tsc && node ./out/test/index.js",
-    "prepare": "husky && npm run build"
+    "prepare": "npx husky && npm run build"
   },
   "repository": {
     "type": "git",
