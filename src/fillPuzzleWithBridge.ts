@@ -1,11 +1,11 @@
 /** Adds bridges to the puzzle. */
 export function fillPuzzleWithBridge(
-  puzzle: string[][],
+  puzzle: (string | number)[][],
   x1: number,
   y1: number,
   x2: number,
   y2: number,
-  numberOfBridges = 1
+  numberOfBridges = 1,
 ) {
   if (numberOfBridges === 0) {
     return;

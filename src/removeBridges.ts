@@ -1,5 +1,7 @@
-export function removeBridges(puzzle: any[][]): number[][] {
-  let newPuzzle = JSON.parse(JSON.stringify(puzzle));
+import { EmptyPuzzle } from "./emptyPuzzle";
+
+export function removeBridges(puzzle: (string | number)[][]): EmptyPuzzle {
+  const newPuzzle = JSON.parse(JSON.stringify(puzzle)) as typeof puzzle;
 
   newPuzzle.forEach((row, i) =>
     row.forEach((field, j) => {
@@ -14,7 +16,8 @@ export function removeBridges(puzzle: any[][]): number[][] {
         default:
           break;
       }
-    })
+    }),
   );
-  return newPuzzle;
+
+  return newPuzzle as EmptyPuzzle;
 }
