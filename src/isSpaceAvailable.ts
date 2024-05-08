@@ -1,6 +1,6 @@
-export function isSpaceAvailable(puzzle: any[][], row: number, col: number) {
-  let rows = puzzle.length;
-  let columns = puzzle[0].length;
+export function isSpaceAvailable(puzzle: number[][], row: number, col: number) {
+  const rows = puzzle.length;
+  const columns = puzzle[0].length;
 
   if (row > 0 && puzzle[row - 1][col] > 0) {
     return false;

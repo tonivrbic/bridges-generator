@@ -1,10 +1,12 @@
-export function showPuzzle(puzzle: any[][]) {
-  let rows = puzzle.length;
-  let columns = puzzle[0].length;
+export function showPuzzle(puzzle: string[][]) {
+  const rows = puzzle.length;
+  const columns = puzzle[0].length;
 
   console.log("----------------------------------");
-  const display = [];
-  puzzle.forEach(row => display.push(" ".repeat(columns)));
+  const display: string[] = [];
+  for (const row of puzzle) {
+    display.push(" ".repeat(columns));
+  }
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < columns; j++) {
       if (
@@ -22,7 +24,9 @@ export function showPuzzle(puzzle: any[][]) {
       }
     }
   }
-  display.forEach(row => console.log(row));
+  for (const row of display) {
+    console.log(row);
+  }
   console.log("----------------------------------");
   return display;
 }

@@ -1,9 +1,10 @@
 import { solver } from "bridges-solver";
+import { performance } from "perf_hooks";
 import { detectBridges } from "./detectBridges";
+import { EmptyPuzzle } from "./emptyPuzzle";
 import { fillPuzzleWithBridge } from "./fillPuzzleWithBridge";
 import { isSpaceAvailable } from "./isSpaceAvailable";
 import { removeBridges } from "./removeBridges";
-const { performance } = require("perf_hooks");
 
 /**
  * Generates a random hashi puzzle.
@@ -18,7 +19,7 @@ export const generate = (
   rows: number,
   columns: number,
   numberOfIslands: number,
-  doubleBridges: number = 0.25
+  doubleBridges = 0.25,
 ) => {
   let puzzleGenerated = false;
   let puzzleRetries = 0;
@@ -27,8 +28,8 @@ export const generate = (
     let genStart = performance.now();
     let puzzle = generateEmptyPuzzle(rows, columns);
 
-    let islands: { row: number; col: number }[] = [];
-    let bridges: [number, number, number, number][] = [];
+    const islands: { row: number; col: number }[] = [];
+    const bridges: [number, number, number, number][] = [];
 
     puzzleGenerated = fillPuzzleWithIslands(
       rows,
@@ -36,7 +37,7 @@ export const generate = (
       islands,
       numberOfIslands,
       puzzle,
-      bridges
+      bridges,
     );
     let genEnd = performance.now();
     // console.timeEnd("generation");
@@ -53,7 +54,7 @@ export const generate = (
     let result = isPuzzleSolvable(puzzle);
     let solveEnd = performance.now();
 
-    if (!result.solved) {
+    if (!result.solved || !result.solution || result.multipleSolutions) {
       puzzleGenerated = false;
       continue;
     }
@@ -68,13 +69,13 @@ export const generate = (
       solution: result.solution,
       puzzleRetries,
       genTime: genEnd - genStart,
-      solveTime: solveEnd - solveStart
+      solveTime: solveEnd - solveStart,
     };
   }
 };
 
 function isSolutionCorrect(original: any[][], solution: string[][]) {
-  let copy = original.map(r => r.map(c => c.toString()));
+  let copy = original.map((r) => r.map((c) => c.toString()));
   return JSON.stringify(copy) === JSON.stringify(solution);
 }
 
@@ -93,13 +94,13 @@ function addDoubleBridges(
   numberOfIslands: number,
   beta: number,
   bridges: [number, number, number, number][],
-  puzzle: any[][]
+  puzzle: EmptyPuzzle,
 ) {
-  let doubleBridges = Math.floor(numberOfIslands * beta);
+  const doubleBridges = Math.floor(numberOfIslands * beta);
 
-  for (let j = 0; j < doubleBridges; j++) {
-    let index = Math.floor(Math.random() * bridges.length);
-    let [row1, col1, row2, col2] = bridges[index];
+  for (let i = 0; i < doubleBridges; i++) {
+    const index = Math.floor(Math.random() * bridges.length);
+    const [row1, col1, row2, col2] = bridges[index];
 
     fillPuzzleWithBridge(puzzle, row1, col1, row2, col2, 2);
     puzzle[row1][col1]++;
@@ -113,50 +114,53 @@ function fillPuzzleWithIslands(
   columns: number,
   islands: { row: number; col: number }[],
   numberOfIslands: number,
-  puzzle: any[][],
-  bridges: [number, number, number, number][]
+  puzzle: EmptyPuzzle,
+  bridges: [number, number, number, number][],
 ) {
-  let [firstRow, firstCol] = generateFirstIsland(rows, columns);
+  const [firstRow, firstCol] = generateFirstIsland(rows, columns);
   islands.push({ row: firstRow, col: firstCol });
 
   let islandsRemaining = numberOfIslands;
+  // Decrease the number of islands by one because the first island is already generated.
+  islandsRemaining--;
+
   let iterations = 0;
   while (islandsRemaining > 0) {
     iterations++;
 
-    let selected = islands[Math.floor(Math.random() * islands.length)];
+    const selected = islands[Math.floor(Math.random() * islands.length)];
 
-    let direction = Math.floor(Math.random() * 4);
+    const direction = Math.floor(Math.random() * 4);
 
-    let generated = false;
+    let generated: boolean | undefined = false;
     switch (direction) {
       case 0:
-        generated = tryGeneratingNaighborUp(puzzle, selected, islands, bridges);
+        generated = tryGeneratingNeighborUp(puzzle, selected, islands, bridges);
         break;
       case 1:
-        generated = tryGeneratingNaighborRight(
+        generated = tryGeneratingNeighborRight(
           puzzle,
           selected,
           islands,
           bridges,
-          columns
+          columns,
         );
         break;
       case 2:
-        generated = tryGeneratingNaighborDown(
+        generated = tryGeneratingNeighborDown(
           puzzle,
           selected,
           islands,
           bridges,
-          rows
+          rows,
         );
         break;
       case 3:
-        generated = tryGeneratingNaighborLeft(
+        generated = tryGeneratingNeighborLeft(
           puzzle,
           selected,
           islands,
-          bridges
+          bridges,
         );
         break;
       default:
@@ -175,25 +179,25 @@ function fillPuzzleWithIslands(
   return true;
 }
 
-function generateEmptyPuzzle(rows: number, columns: number): any[][] {
-  return new Array(rows).fill(0).map(x => new Array(columns).fill(0));
+function generateEmptyPuzzle(rows: number, columns: number): EmptyPuzzle {
+  return new Array(rows).fill(0).map((x) => new Array(columns).fill(0));
 }
 
 function generateFirstIsland(rows: number, columns: number) {
-  let positions = [
-    [0, 0],
-    [0, columns - 1],
-    [rows - 1, columns - 1],
-    [rows - 1, 0]
-  ];
-
-  return positions[Math.floor(Math.random() * positions.length)];
+  const row = Math.floor(Math.random() * rows);
+  const column = Math.floor(Math.random() * columns);
+  return [row, column];
 }
 
-function tryGeneratingNaighborUp(puzzle, selected, islands, bridges) {
-  let desiredLocation = Math.max(
+function tryGeneratingNeighborUp(
+  puzzle: EmptyPuzzle,
+  selected: { row: number; col: number },
+  islands: { row: number; col: number }[],
+  bridges: [number, number, number, number][],
+): boolean | undefined {
+  const desiredLocation = Math.max(
     Math.floor(Math.random() * (selected.row - 2)),
-    0
+    0,
   );
 
   let bridgeDetected = false;
@@ -221,23 +225,23 @@ function tryGeneratingNaighborUp(puzzle, selected, islands, bridges) {
       selected.row,
       selected.col,
       desiredLocation,
-      selected.col
+      selected.col,
     );
     bridges.push([selected.row, selected.col, desiredLocation, selected.col]);
 
     return true;
   }
 }
-function tryGeneratingNaighborRight(
-  puzzle: any[][],
-  selected: any,
-  islands: any[],
-  bridges: any[],
-  columns: number
-): boolean {
-  let desiredLocation = Math.min(
+function tryGeneratingNeighborRight(
+  puzzle: EmptyPuzzle,
+  selected: { row: number; col: number },
+  islands: { row: number; col: number }[],
+  bridges: [number, number, number, number][],
+  columns: number,
+): boolean | undefined {
+  const desiredLocation = Math.min(
     Math.floor(selected.col + 2 + Math.random() * (columns - selected.col - 2)),
-    columns - 1
+    columns - 1,
   );
 
   let bridgeDetected = false;
@@ -266,7 +270,7 @@ function tryGeneratingNaighborRight(
       selected.row,
       selected.col,
       selected.row,
-      desiredLocation
+      desiredLocation,
     );
     bridges.push([selected.row, selected.col, selected.row, desiredLocation]);
 
@@ -274,16 +278,16 @@ function tryGeneratingNaighborRight(
   }
 }
 
-function tryGeneratingNaighborDown(
-  puzzle: any[][],
-  selected: any,
-  islands: any[],
-  bridges: any[],
-  rows: number
-): boolean {
-  let desiredLocation = Math.min(
+function tryGeneratingNeighborDown(
+  puzzle: EmptyPuzzle,
+  selected: { row: number; col: number },
+  islands: { row: number; col: number }[],
+  bridges: [number, number, number, number][],
+  rows: number,
+): boolean | undefined {
+  const desiredLocation = Math.min(
     Math.floor(selected.row + 2 + Math.random() * (rows - selected.row - 2)),
-    rows - 1
+    rows - 1,
   );
 
   let bridgeDetected = false;
@@ -310,7 +314,7 @@ function tryGeneratingNaighborDown(
       selected.row,
       selected.col,
       desiredLocation,
-      selected.col
+      selected.col,
     );
     bridges.push([selected.row, selected.col, desiredLocation, selected.col]);
 
@@ -318,15 +322,15 @@ function tryGeneratingNaighborDown(
   }
 }
 
-function tryGeneratingNaighborLeft(
-  puzzle: any[][],
-  selected: any,
-  islands: any[],
-  bridges: any[]
-): boolean {
-  let desiredLocation = Math.max(
+function tryGeneratingNeighborLeft(
+  puzzle: EmptyPuzzle,
+  selected: { row: number; col: number },
+  islands: { row: number; col: number }[],
+  bridges: [number, number, number, number][],
+): boolean | undefined {
+  const desiredLocation = Math.max(
     Math.floor(Math.random() * (selected.col - 2)),
-    0
+    0,
   );
 
   let bridgeDetected = false;
@@ -354,7 +358,7 @@ function tryGeneratingNaighborLeft(
       selected.row,
       selected.col,
       selected.row,
-      desiredLocation
+      desiredLocation,
     );
     bridges.push([selected.row, selected.col, selected.row, desiredLocation]);
 

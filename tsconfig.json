@@ -3,6 +3,8 @@
     "target": "ES2020",
     "module": "CommonJS",
     "outDir": "./out",
+
+    "strict": true,
     "sourceMap": true,
     "declaration": true,
     "declarationDir": "./out",

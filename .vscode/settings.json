@@ -1,3 +1,10 @@
 {
-  "terminal.integrated.automationShell.windows": "C:\\Program Files\\Git\\bin\\bash.exe"
+  "terminal.integrated.automationShell.windows": "C:\\Program Files\\Git\\bin\\bash.exe",
+  "editor.defaultFormatter": "biomejs.biome",
+  "[javascript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  }
 }
