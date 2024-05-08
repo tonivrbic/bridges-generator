@@ -7,17 +7,12 @@
  * The value must be between 0 and 1.
  * @returns Returns the puzzle as a two-dimensional array.
  */
-declare const generate: (
-  rows: number,
-  columns: number,
-  numberOfIslands: number,
-  doubleBridges?: number
-) => {
-  puzzle: number[][];
-  solution: string[][];
-  puzzleRetries: number;
-  genTime: number;
-  solveTime: number;
+declare const generate: (rows: number, columns: number, numberOfIslands: number, doubleBridges?: number) => {
+    puzzle: number[][];
+    solution: string[][];
+    puzzleRetries: number;
+    genTime: number;
+    solveTime: number;
 };
 
 export { generate };

@@ -20,7 +20,6 @@ export const generate = (
   numberOfIslands: number,
   doubleBridges: number = 0.25
 ) => {
-  console.log(`generating ${numberOfIslands}`);
   let puzzleGenerated = false;
   let puzzleRetries = 0;
   while (puzzleGenerated === false) {
@@ -50,18 +49,17 @@ export const generate = (
 
     addDoubleBridges(numberOfIslands, doubleBridges, bridges, puzzle);
 
-    // showPuzzle(puzzle);
-
-    // console.time("solving");
-
     let solveStart = performance.now();
-    let result = isPuzzleSolveable(puzzle);
+    let result = isPuzzleSolvable(puzzle);
     let solveEnd = performance.now();
 
     if (!result.solved) {
-      // if (!isSolutionCorrect(puzzle, result.solution)) {
       puzzleGenerated = false;
-      // console.log(`retry:${puzzleRetries} bridges:${numberOfIslands}`);
+      continue;
+    }
+
+    if (!checkForMultipleSolutions(puzzle)) {
+      puzzleGenerated = false;
       continue;
     }
 
@@ -80,9 +78,15 @@ function isSolutionCorrect(original: any[][], solution: string[][]) {
   return JSON.stringify(copy) === JSON.stringify(solution);
 }
 
-function isPuzzleSolveable(puzzle: any[][]) {
+function isPuzzleSolvable(puzzle: any[][]) {
   let emptyPuzzle = removeBridges(puzzle);
-  return solver(emptyPuzzle);
+  return solver(emptyPuzzle, 2, true);
+}
+
+function checkForMultipleSolutions(puzzle: any[][]) {
+  let emptyPuzzle = removeBridges(puzzle);
+  let result = solver(emptyPuzzle, 3, true);
+  return result.solved && !result.multipleSolutions;
 }
 
 function addDoubleBridges(
