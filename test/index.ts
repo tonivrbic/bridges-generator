@@ -1,10 +1,10 @@
 import * as fs from "fs";
 import { generate } from "../src";
 
-generateLeveledPuzzles();
+// generateLeveledPuzzles();
 
 // random generation
-generateRandomPuzzles();
+// generateRandomPuzzles();
 
 // daily generation
 generateDailyPuzzles();
@@ -15,7 +15,7 @@ function generateLeveledPuzzles() {
   let hard = 47;
   while (easy < 50 || medium < 50 || hard < 50) {
     for (let index = 0; index < 25; index++) {
-      let result = generate(15, 9, 27 + Math.floor(Math.random() * 5), 0.55);
+      const result = generate(15, 9, 27 + Math.floor(Math.random() * 5), 0.55);
       if (!result) {
         continue;
       }
@@ -55,7 +55,7 @@ function generateRandomPuzzles() {
   let all = [];
   while (num < 1000) {
     num++;
-    let result = generate(15, 9, 27 + Math.floor(Math.random() * 5), 0.5)!;
+    const result = generate(15, 9, 27 + Math.floor(Math.random() * 5), 0.5)!;
     all.push({ puzzle: result.puzzle, solution: result.solution });
     if (num % 100 === 0) {
       fs.writeFileSync(`gen/${num / 100}.json`, JSON.stringify(all));
@@ -68,10 +68,10 @@ function generateRandomPuzzles() {
 function generateDailyPuzzles() {
   let num = 0;
   while (num < 1000) {
-    let date = new Date();
+    const date = new Date();
     date.setDate(date.getDate() + num);
     num++;
-    let result = generate(15, 9, 27 + Math.floor(Math.random() * 5), 0.5)!;
+    const result = generate(15, 9, 27 + Math.floor(Math.random() * 5), 0.5)!;
     fs.writeFileSync(
       `gen/daily/${date.getFullYear()}-${(date.getMonth() + 1)
         .toString()
